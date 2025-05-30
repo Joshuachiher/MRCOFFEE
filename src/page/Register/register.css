@@ -1,0 +1,36 @@
+.auth-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to right, #a460f9, #6f9eff);
+}
+
+.auth-input {
+  width: 250px;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.auth-button {
+  width: 270px;
+  padding: 10px;
+  margin-top: 10px;
+  background: #6f9eff;
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.auth-button.google {
+  background: #db4437;
+}
+
+.auth-button:hover {
+  opacity: 0.9;
+}
