@@ -1,21 +1,30 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { db } from "../../config/firebase";
+import { Link, useNavigate } from "react-router-dom";
+import { db, auth } from "../../config/firebase";
 import { collection, getDocs } from "firebase/firestore";
+import { useAuth } from "../../context/AuthContext";
+import { signOut } from "firebase/auth";
 import "./home.css";
 
 export function Home() {
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const [topProducts, setTopProducts] = useState([]);
 
   useEffect(() => {
+    if (!currentUser) {
+      navigate("/login");
+      return;
+    }
+
     const getTopProducts = async () => {
       try {
         const productCollectionRef = collection(db, "products");
         const data = await getDocs(productCollectionRef);
         const sortedData = data.docs
           .map(doc => ({ id: doc.id, ...doc.data() }))
-          .sort((a, b) => b.orders - a.orders) // Assuming 'orders' field in Firebase
-          .slice(0, 5); // Top 5
+          .sort((a, b) => b.orders - a.orders) // Assuming 'orders' field exists
+          .slice(0, 5);
         setTopProducts(sortedData);
       } catch (error) {
         console.error("Failed to load products:", error);
@@ -23,10 +32,24 @@ export function Home() {
     };
 
     getTopProducts();
-  }, []);
+  }, [currentUser, navigate]);
+
+  const logout = async () => {
+    await signOut(auth);
+    navigate("/login");
+  };
+
+  if (!currentUser) {
+    return null; // Or a loading spinner while redirect happens
+  }
 
   return (
     <div className="home-page">
+      <div style={{ padding: 20, textAlign: "right" }}>
+        <p>Welcome, {currentUser.email}</p>
+        <button onClick={logout}>Logout</button>
+      </div>
+
       {/* Banner */}
       <section className="banner">
         <img src="/banner.jpg" alt="Coffee Banner" className="banner-image" />
